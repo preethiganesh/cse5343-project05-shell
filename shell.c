@@ -1,93 +1,75 @@
-// preethi rajagopalan
-void ifTypeCommand(char* Command, char* filename );//function declarations-passing the command(type/delete/copy/execute/exit)
-void ifCopyCommand(char *Command,char* filename1 , char* filename2);//copying from one file to another
-void ifExecutableCommand(char* Command, int args);
-void ifError(char* Command);//any other command other than type/copy/execute/delete/exit shows error message
-void ifExitCommand();
-void ifDeleteCommand(char* Command, char* filename);
-#include <stdio.h>
-int main(int argc, char* argv[])
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<sys/types.h>
+
+
+
+//void TypeCommand(char filename[] );// display the content of file 
+void CopyCommand(char filename1[] ,char filename2[]);//copying from one file to another
+void ExecutableCommand(char command[]);// execute the command
+void DeleteCommand(char filename[]);//delete the file
+char** splitstring(char str[],int *size );//parse input string and returns command/filenames
+//int main()
 {
-char **Command;
-char str[52][52];
-int i,n;
-char **args;//pointer to pointer,2 dimensional character array
-printf("\n Hello There! \n");
-printf("\n Enter the number of arguments:");
-scanf("%d",&n);
-printf("\n Enter the command: \n");
-for(i=0;i<n;i++)
-scanf("%s",Command[i]);
-if ( strcmp(Command[0], "delete") == 0) 
-   { 
-ifDeleteCommand(Command);
-   } 
-return 0;}
-if ( (strcmp(Command, "exit") == 0 &&argc== 1 ) 
-      ifExitCommand();
-   } 
-   else if ( strcmp(Command, "type") == 0 &&argc== 2 ) 
-   { 
-   ifTypeCommand(Command);
-   } 
-   else if ( strcmp(Command, "copy") == 0 &&argc== 3 ) 
-   { 
-scanf("%s",str[0]);
-scanf("%s",str[1]);
-scanf("%s",str[2]);      
-ifCopyCommand(str[1], str[2]);
-   } 
-   else if ( strcmp(Command, "delete") == 0 &&argc== 2) 
-   { 
-ifDeleteCommand(Command);
-   } 
-   else if (argc== 5 ) 
- { 
-scanf("%s",str);
-scanf("%s",*args);
-ifExecutableCommand(str,args);
-   } 
-   else 
-{ 
-ifError(Command);
-}
+   //char command[100];
+   int size,i;
+   char** parse_command;
+   printf("****************************SHELL****************************\n\n");
+   
+   for(;;){
+       printf("       Shell>>");
+       fgets(command,100,stdin);
+       command[strlen(command)-1]='\0'; 
+       parse_command=splitstring(command,&size);
+       // assign null to end of string
+       for(i=0;i<size;i++)
+          parse_command[i][strlen(parse_command[i])]='\0';
+       
+       // compare the commands
+       if (!strcmp(parse_command[0],"delete")) 
+       { 
+          if (size==2)
+             DeleteCommand(parse_command[1]);
+          else
+             printf("      ERROR: Invalid format >>delete filename\n");
+       }
+       else if (!strcmp(parse_command[0],"exit"))
+       {
+            break;
+       } 
+       else if(!strcmp(parse_command[0], "type")) 
+       { 
+         if (size==2)    
+            TypeCommand(parse_command[1]);
+         else
+            printf("      ERROR: Invalid command format >>type filename\n");
+       }
+       else if (!strcmp(parse_command[0],"copy")) 
+       { 
+         if (size==3)
+           CopyCommand(parse_command[1], parse_command[2]);
+         else
+           printf("       ERROR: Invalid command format >>copy from-filename to-filename\n");
+       } 
+       else
+       { 
+          if (size==1)
+            ExecutableCommand(parse_command[0]);
+          else
+            printf("     ERROR: Invalid command>> type/delete/copy/type/exit//{exec-file-name}\n"); 
+       } 
+    }
 return 0;
 }
-void ifTypeCommand(char Command[50], char filename[50])//type command reads the contents of a file and displays that on the screen.
+
+void DeleteCommand(char filename[50])
 {
-FILE *f1;
-char c;
-f1 = fopen  ("a.c", "r"); 
-while(f1)
-{
-c= fgetc(f1);
-putc(c,f1);
+    if(remove(filename)){
+      printf("     ERROR: Can't delete a file\n");
+      return;
+    }   
 }
-void ifDeleteCommand(char** Command)//the given filename will be deleted if Command is "Delete"
-{
-remove(Command[1]);   
-}
-void ifCopyCommand(char* str[1], char* str[2])
-{
-FILE *f1,*f2;
-char c;
-f1 = fopen  (str[1], "r"); 
-f2 = fopen  (str[2], "w"); 
-while(f1)
-{
-c= fgetc(f1);
-fputc(c,f2);
-}
-void ifExecutableCommand(char Command[50] , char **args )
-{
-execvp(Command,args);   
-}
-void ifExitCommand()
-{
-exit(0);
-}
-void ifError(char* Command)
-{
-printf("\n Invalid Command ");
-}
+
+ 
 
