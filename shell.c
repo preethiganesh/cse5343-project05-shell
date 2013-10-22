@@ -87,6 +87,18 @@ char** splitstring(char str[], int *size){
 
 void TypeCommand(char filename[50])
 {
+    FILE *f1;
+    char line[200];
+    f1 = fopen(filename, "r"); 
+    if (f1==NULL){
+      printf("     ERROR: Can't open input file to read\n");
+      return;
+    }
+    while(fgets(line, 200, f1)!=NULL)
+    {  
+      printf("%s\n",line);
+    }
+ fclose(f1);
 }
 
 
@@ -100,7 +112,55 @@ void DeleteCommand(char filename[50])
 
 void CopyCommand(char filename1[50], char filename2[50])
 {
+    FILE *f1,*f2;
+    char line[200];
+    f1 = fopen(filename1,"r"); 
+    if (f1==NULL){
+      printf("can't open input file to read\n"); 
+      return;
+    }
+    f2=fopen(filename2,"w");
+    if (f2==NULL){
+      printf("      ERROR: Can't open input file to write\n");
+      return;
+    }
+    while(fgets(line,200,f1)!=NULL)
+    {
+      fputs(line,f2);
+    }
+   fclose(f2);
+   fclose(f1);
 }
 
+void ExecutableCommand(char command[50])
+{
+    pid_t pid;
+    int status;
+
+    char **args=malloc(sizeof(char*)*2);
+    if (!args)
+       return ;
+    args[0]=malloc(sizeof(char) * MAXLEN);
+    if (!args[0])
+       return ;
+    strcpy(args[0],command);
+    args[1]="";
+
+    command[strlen(command)]='\0';
+    
+    if((pid = fork())<0){
+      printf("      ERROR: Forking child process failed \n");
+      return;
+    }
+    else if (pid==0){
+      if(execvp(args[0],args)<0){
+          printf("      ERROR: Exec failed\n");
+          return;
+      }
+    }
+    else{
+        while (wait(&status)!=pid){}
+    }    
+}
 
 
