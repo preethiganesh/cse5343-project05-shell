@@ -3,16 +3,18 @@
 #include<stdlib.h>
 #include<sys/types.h>
 
+#define MAXLEN 4
+#define MAXCHAR 100
 
-
-//void TypeCommand(char filename[] );// display the content of file 
+void TypeCommand(char filename[] );// display the content of file 
 void CopyCommand(char filename1[] ,char filename2[]);//copying from one file to another
 void ExecutableCommand(char command[]);// execute the command
 void DeleteCommand(char filename[]);//delete the file
 char** splitstring(char str[],int *size );//parse input string and returns command/filenames
-//int main()
+
+int main()
 {
-   //char command[100];
+   char command[100];
    int size,i;
    char** parse_command;
    printf("****************************SHELL****************************\n\n");
@@ -62,6 +64,31 @@ char** splitstring(char str[],int *size );//parse input string and returns comma
     }
 return 0;
 }
+ 
+char** splitstring(char str[], int *size){
+  char *pch;
+  char** tmp=malloc(sizeof(char*) * MAXLEN) ;
+  if(!tmp)
+   return NULL; 
+  *size=0;
+  pch = strtok (str," ");
+  while (pch != NULL)
+  {
+    tmp[*size]=malloc(sizeof(char) * (MAXCHAR+1));
+    if (!tmp[*size])
+        return NULL;
+    strcpy (tmp[*size],pch);
+    pch = strtok (NULL, " ");
+    (*size)++;
+  }
+ tmp[*size]="";
+ return tmp;
+}
+
+void TypeCommand(char filename[50])
+{
+}
+
 
 void DeleteCommand(char filename[50])
 {
@@ -71,5 +98,9 @@ void DeleteCommand(char filename[50])
     }   
 }
 
- 
+void CopyCommand(char filename1[50], char filename2[50])
+{
+}
+
+
 
